@@ -20,4 +20,4 @@ else
     echo $$ >> "$PID_FILE"
 fi
 
-R CMD BATCH $HOME/recode-videos.R
+Rscript $HOME/vidkodkoo/src/R/recode-videos.R

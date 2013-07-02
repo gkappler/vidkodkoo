@@ -14,4 +14,7 @@ forceOverwrite <- FALSE
   ext.output <- "xvid.avi"
 
   dir.tmp <- "/data/Videos/tmp/"
-  command.file <- "~/recode_videos.sh"
+  command.file <- "~/recode_videos.sh"  
+
+
+  dir.archive <- "/data/Videos/Archiv/"

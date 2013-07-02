@@ -21,10 +21,13 @@ tmp <- paste(tmp,ext.output,sep="")
 
 ## set target path for compressed videos
 ziel <- gsub(dir.input,dir.output,merged)
-                                        # set extension
+## set extension
 ziel <- paste(ziel,ext.output,sep="")
 zieldir <- gsub("/[^/]*$","",ziel)
 
+
+arch <- gsub(dir.input,dir.archive,teil)
+## determine archive file name and path
 
 ############################################
 ## Start shell script output
@@ -57,6 +60,7 @@ for (n in unique(merged)) {
   nfile <- gsub ("^.*/","",n)
   z <- ziel[merged==n][[1]] 
   t <- teil[merged==n]
+  a <- arch[merged==n]
 
   tmpf <- tmp[merged==n][[1]]
                                         #    t <- gsub("(MOD|mod|mpg|MPG|mts|MTS)","avi",t)
@@ -125,7 +129,8 @@ for (n in unique(merged)) {
       ## delete dv file
       cat.command.file(paste ("  rm \"", mergeddv,"\" \n", sep=""))
     }
-    for (originalteil in t)
+    
+    cat.command.file(paste ("  mv \"", t,"\" \"",a,"\" \n", sep="",collapse="\n"))
     
 
     cat.command.file("fi\n\n")
