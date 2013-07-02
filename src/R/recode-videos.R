@@ -168,4 +168,4 @@ for (n in unique(merged)) {
 cat.command.file("find /data/Videos/ -size 0 -exec rm {} \\;\n")
 
 system (paste ("chmod +x ",command.file))
-system (command.file,show.output.on.console=TRUE)
+if (run.compression) system (command.file,show.output.on.console=TRUE)
