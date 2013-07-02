@@ -6,7 +6,7 @@ forceOverwrite <- FALSE
   regexp.restrict <- ".*"  
   regexp.prio <- ".*tagesmutter.videos.*(jowö|lebl|tiva|bjlö|alwi|emke|luüb|mave|roro|sopr|lucl|lebl|bilö|alwi|luüb|emke|jowö|tiva|mave|sopr|lucl).*"
 #  regexp.Teil <- "_Teil ?[1-9]"
-  regexp.Teil <- "_Teil[1-9]"
+  regexp.teil <- "_Teil[1-9]"
   regexp.videos <- "(MPG|mpg|MOD|mod|mts|MTS)$"
 
   dir.input <- "/data/Videos/unkomprimiert"
