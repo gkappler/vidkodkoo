@@ -10,7 +10,7 @@ create.tickets <- function (K,D,
 names(K) <- tolower(names(K))
 names(D) <- tolower(names(D))
 ######################################################################
-## Initialisiere Diplomandinnen
+  ## Initialisiere Diplomandinnen
   D$fullname <- paste(D$vorname, D$nachname)
   D$matrikel
   D$video<-gsub (" /.*","",D$kodiersystem)

@@ -10,18 +10,18 @@ debug=FALSE ) {
     con <- file(filename, "r", blocking = FALSE,encoding="iso8859-1")
       lines <- readLines(con) # empty
     close(con)
-  
+
     if (debug) print (paste("reading done "))
-  
+
     if (length(grep(".*<BR>COLUMN.*",lines[[1]])>0)) {
       ## get column names from line 2
       h <- strsplit(lines[[2]],"\t")[[1]]
-      
+
       ## data  
       data <- strsplit(lines[3:length(lines)],"\t")
       data <- lapply(data, function (x) return (x[1:max(which(x!=""))]))
       if (debug) print ("splitting done")
-      
+
       linetype <- sapply(data,function (x) {return (x[[1]]);})
       group <- data.frame(from=which(sapply(data,function (x) {return (x[[1]]);})=="S"))
       if (length(group$from)>1) {
@@ -30,8 +30,8 @@ debug=FALSE ) {
         group$to <- c(length(data))
       }
       group$names <- sapply(data[group$from],function (x) getatindex(x,5))
-      
-      
+
+
       set <- data.frame(from=which(sapply(data,function (x) {return (x[[1]]);})=="T"))
       if (length(set$from)>1) {
         set$to <- c(set$from[2:length(set$from)]-1,length(data))
@@ -39,21 +39,21 @@ debug=FALSE ) {
         set$to <- c(length(data))
       }
       set$names <- sapply(data[set$from],function (x) getatindex(x,5))
-      
+
       if (debug) print ("set/group parsing done")
-      
+
       splits <- sapply(data,function (x) {return (length(x));})
       maxcol <- max(splits)
-      
+
       data <- lapply(data,function (x) {
         if (length(x)<maxcol) {
           x <- c(x, rep("",maxcol-length(x)))
         }
         return (x);
       })
-      
+
       s <- as.data.frame(t(sapply(data, function(x) x)),stringsAsFactors=FALSE)
-          
+
       names(s) <- h[1:ncol(s)]
       s$set <- c(rep("",set[1,"from"]-1),with(set,rep(names,to-from+1)))
       s$group <- c(rep("",group[1,"from"]-1),with(group,rep(names,to-from+1)))
@@ -77,7 +77,7 @@ merge.act <- function (data, listname="file", debug=FALSE) { if
     print (paste (file,class(fdata)))
      if (class(fdata)=="matrix") {
         if (nrow(fdata)>0) data[[file]] <- cbind(fdata,file) else {
-          print(paste("removing invalid data file",file, fdata))
+          print(paste("removing empty data file",file, fdata))
           data[[file]] <- NULL
         }
      } else {
@@ -107,17 +107,17 @@ write.act <- function (d, system, filename,
     colstart <- 10
     columns <- setdiff(names(d),c(system.cols,"set",
                                   "group"))
-    
+
     cat(paste("SYSTEM: ",system,"<BR>",sep=""),
         paste("<BR>COLUMN:",columns,sep=""),
         "<BR>DEFINE: FPS, 25<BR>\n",
         sep="",file=filename)
     cat(c(system.cols,columns),sep="\t",file=filename,append=TRUE)
   #  cat("\n",file=filename,append=TRUE)
-    
-    
+
+
     d <- d[order(d$group,d$set,d$Entry),]
-    
+
     for (g in unique (d$group)) {
       print (paste("writing group",g))
                                           # create group
@@ -129,13 +129,13 @@ write.act <- function (d, system, filename,
         ss <- subset(sub,set==s)
         ss <- ss[,c(system.cols,setdiff(names(ss),c(system.cols,"set","group")))]
                                           #     print(head(ss))  
-        
+
         cat ("\nT\t00:00:00:00\t00:00:00:00\t\t",
              s, "\n",
              sep="",file=filename,append=TRUE)
         print (paste("   writing ",g,s))
                                           #      print entries
-        
+
         cat(
             paste(
                   apply(ss,1,
@@ -146,7 +146,7 @@ write.act <- function (d, system, filename,
       }
     }
   }
-  
+
   write.multifile.act <- function (d, system, filename,
                                    warningfile="warnings.txt",
                                    errorfile="errors.txt",
@@ -164,10 +164,10 @@ write.act <- function (d, system, filename,
                  paste(paste(filename,ming,maxg,sep="-"),".act",sep=""),
                  warningfile=warningfile,
                  errorfile=errorfile);
-      
+
     }
   }
-  
+
   write.multifile.set.act <- function (d, system, filename,
                                    warningfile="warnings.txt",
                                    errorfile="errors.txt",
@@ -185,7 +185,7 @@ write.act <- function (d, system, filename,
                  paste(paste(filename,ming,maxg,sep="-"),".act",sep=""),
                  warningfile=warningfile,
                  errorfile=errorfile);
-      
+
     }
   }
 
@@ -211,23 +211,23 @@ read.tickets.act <- function(f.full,
                              error.log, 
                              exclude=function(f) exclude.blacklisted(f,filename=blacklist.file)) {
   f <- exclude(f.full)
-  
+
   cat(paste(setdiff(f.full,f)," (blacklist)\n"),file=excluded.log)
-  
+
   dlist <- sapply (f,read.act)
   names(dlist) <- sapply(names(dlist),URLdecode)
 
   ## Get all column names of all files, also in a list:
   colnames <- lapply (dlist, function (x) colnames(x))
   names (colnames) <- names (dlist)
-  
-  
+
+
   ## Determine the intersection of columns common to all spss files:
   ## start with column names of first file
   common <- colnames[[1]]
-  
+
   for (n in names(colnames)) common <- intersect (common, colnames[[n]])
-  
+
   return (list (merged=merge.act(dlist),
                 ## column names that were in all files
                 common=common,
