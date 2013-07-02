@@ -52,6 +52,12 @@ for (zdir in unique(zieldir)) {
   cat.command.file(paste ("    mkdirhier \"",zdir,"\"\n",sep=""))
   cat.command.file(paste ("fi\n",sep=""))
 }
+cat.command.file("# create all archive directories\n")
+for (zdir in unique(gsub("/[^/]*$","",arch))) {
+  cat.command.file(paste ("if [[ ! -f \"",zdir,"\" ]]; then\n",sep=""))
+  cat.command.file(paste ("    mkdirhier \"",zdir,"\"\n",sep=""))
+  cat.command.file(paste ("fi\n",sep=""))
+}
 
 cat.command.file("# preparation of files:  each file is 1st merged (if there are several parts) and 2nd compressed.\n\n")
 
@@ -71,7 +77,6 @@ for (n in unique(merged)) {
   if (forceOverwrite) cat.command.file(paste ("rm \"",z,"\"\n",sep="")) ## delete output, necessary with archiving system
 
   if (compress) {
-
     cat.command.file(paste ("if [[ ! -f \"",z,"\" ]]; then\n",sep=""))
     if (length(t)>1) { # there are several parts
       mergeddv <- gsub ("\\.[^.]*$",".dv",tmpf)
@@ -136,7 +141,7 @@ for (n in unique(merged)) {
     cat.command.file("fi\n\n")
   }
 
-  if (cleanUp) {
+  if (cleanUp) { ## NOTE: this is broken after change to archiving process, kept for reference
     cat.command.file(paste ("if [[ -f \"",z,"\" ]]; then\n",sep=""))
 
     ## check whether original file can be deleted

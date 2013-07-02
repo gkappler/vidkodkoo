@@ -1,6 +1,6 @@
 
 forceOverwrite <- FALSE
-  cleanUp  <- TRUE
+  cleanUp  <- FALSE  ## NOTE: cleanup is broken after change to archiving process, kept for reference
   compress <- TRUE
 
   regexp.restrict <- ".*"  
