@@ -67,21 +67,23 @@ for (n in unique(merged)) {
   z <- ziel[merged==n][[1]] 
   t <- teil[merged==n]
   a <- arch[merged==n]
-
+  
   tmpf <- tmp[merged==n][[1]]
-                                        #    t <- gsub("(MOD|mod|mpg|MPG|mts|MTS)","avi",t)
-  print (t)
-  print (n)
-  print (z)
+  ##    t <- gsub("(MOD|mod|mpg|MPG|mts|MTS)","avi",t)
 
+  ## Debugging
+  ##    print (t)
+  ##    print (n)
+  ##    print (z)
+  
   if (forceOverwrite) cat.command.file(paste ("rm \"",z,"\"\n",sep="")) ## delete output, necessary with archiving system
-
+  
   if (compress) {
     cat.command.file(paste ("if [[ ! -f \"",z,"\" ]]; then\n",sep=""))
     if (length(t)>1) { # there are several parts
       mergeddv <- gsub ("\\.[^.]*$",".dv",tmpf)
       cat.command.file(paste ("rm -f \"",mergeddv,"\"\n",sep=""))
-
+      
       cat.command.file(paste ("  echo \"merging ",paste(t,sep="",collapse=" "), "into",mergeddv,"\"\n"))
       for (teilf in t) {
         cat.command.file(paste ("ffmpeg -i \"",teilf,"\"",
@@ -94,8 +96,8 @@ for (n in unique(merged)) {
     } else {
       infile <- t[[1]]
     }
-
-
+    
+    
     if (grepl ("mts|dv",tolower(n))) {
       cat.command.file(paste ("  echo \"recoding $inf into ",z," (10 Mbit/sec)\"\n"))
       cat.command.file(paste ("  ffmpeg ",
@@ -107,8 +109,8 @@ for (n in unique(merged)) {
                               "-threads 3 ",  # multi-cpu compression
                               "-y ",                                          # force overwrite
                               "\"", tmpf,"\" ",                                  # output
-                              "> log/",nfile,".out ",                         # logging
-                              "2> log/",nfile,".err\n", sep=""))              # error logging
+                              "> \"log/",nfile,".out\" ",                         # logging
+                              "2> \"log/",nfile,".err\"\n", sep=""))              # error logging
       cat.command.file(paste ("  echo \"recoded $inf into ",z," (10 Mbit/sec)\"\n"))
     } else {
       cat.command.file(paste ("  echo \"recoding $inf into ",z," (3 Mbit/sec)\"\n"))
@@ -121,15 +123,15 @@ for (n in unique(merged)) {
                               "-threads 3 ",  # multi-cpu compression
                               "-y ", #
                               "\"", tmpf,"\" ", #
-                              "> log/",nfile,".out ", #
-                              "2> log/",nfile,".err\n", sep=""))
+                              "> \"log/",nfile,".out\" ", #
+                              "2> \"log/",nfile,".err\"\n", sep=""))
       cat.command.file(paste ("  echo \"recoded $inf into ",z," (3 Mbit/sec)\"\n"))
     }
-
-
+    
+    
     ## move the tmp file to the target folder
     cat.command.file(paste ("  mv \"", tmpf,"\" \"",z,"\"\n", sep=""))
-
+    
     if (length(t)>1) { # there are several parts
       ## delete dv file
       cat.command.file(paste ("  rm \"", mergeddv,"\" \n", sep=""))
@@ -137,13 +139,13 @@ for (n in unique(merged)) {
     
     cat.command.file(paste ("  mv \"", t,"\" \"",a,"\" \n", sep="",collapse="\n"))
     
-
+    
     cat.command.file("fi\n\n")
   }
-
+  
   if (cleanUp) { ## NOTE: this is broken after change to archiving process, kept for reference
     cat.command.file(paste ("if [[ -f \"",z,"\" ]]; then\n",sep=""))
-
+    
     ## check whether original file can be deleted
     ## this is the case if the target file now exists and has the desired duration:
     cat.command.file(paste ("durz=`ffmpeg -i \"",z,"\" 2>&1 | grep Duration | sed 's/\\..*$//g' | sed 's/.*: //g'`;\n",sep=""))
@@ -151,7 +153,7 @@ for (n in unique(merged)) {
       cat.command.file(paste ("duro=`ffmpeg -i \"",n,"\" 2>&1 | grep Duration | sed 's/\\..*$//g' | sed 's/.*: //g'`;\n",sep=""))
     else
       cat.command.file(paste ("duro=`ffmpeg -i \"",mergeddv,"\" 2>&1 | grep Duration | sed 's/\\..*$//g' | sed 's/.*: //g'`;\n",sep=""))
-
+    
     cat.command.file(paste ("if [[ \"$durz\" == \"$duro\" ]]; then\n",sep=""))
     cat.command.file(paste ("  echo \"# '",n,"' can be deleted because its duration $duro is the same as in '",z,"' ($durz) \" >> cleanup.sh \n",sep=""))
     cat.command.file(paste ("  echo \"# rm -f \\\"",n,"\\\"\" >> cleanup.sh \n",sep=""))
