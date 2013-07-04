@@ -1,7 +1,7 @@
 
 forceOverwrite <- FALSE
 compress <- TRUE
-run.compression <- FALSE
+run.compression <- TRUE
 
 regexp.restrict <- ".*"  
 regexp.prio <- ".*tagesmutter.videos.*(jowö|lebl|tiva|bjlö|alwi|emke|luüb|mave|roro|sopr|lucl|lebl|bilö|alwi|luüb|emke|jowö|tiva|mave|sopr|lucl).*"
