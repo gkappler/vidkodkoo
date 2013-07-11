@@ -24,7 +24,8 @@ processLine(){
         video=`echo "$video" | sed 's/\.msmpeg4v2.avi//g'`;
         if [[ ! -f $infile  ]]; then
             echo >> $logfile
-            echo "Zeile $lno richtig, aber kein (oder mehrere) Videos gefunden. Alles richtig geschrieben?: $l \nfound: $infile" >> $logfile
+            echo "Zeile $lno richtig, aber kein (oder mehrere) Videos gefunden. Alles richtig geschrieben?: $l"
+            echo "found: $infile" >> $logfile
             find $kompdir -iname "${video}*"
         else
             outfile="$outdir/${video}_${dipl}_${tick}.xvid.avi"
