@@ -91,9 +91,6 @@ do
     lno=1
     iconv -f iso8859-1 -t utf8 $f | while read line
     do
-      echo
-      echo
-      echo "processing file $f"
         if [[ ! "$line" =~ ^[[:space:]]*$ ]]; then      
             echo "       processing $line"
             processLine "$line" "$fdir" $schnitttype

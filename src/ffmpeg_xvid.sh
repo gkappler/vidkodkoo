@@ -66,7 +66,7 @@ function cut {
     ## still image w/o sound
     NrChannels=2
     SampleRate=44100
-    ffmpeg -ar $SampleRate -acodec pcm_s16le -f s16le -ac $NrChannels -i <(dd if=/dev/zero) -loop_input -t $standdur -i Standbild640.480.png $dvopts -y $stand > "log/$outfile.stand.log" 2> "log/$outfile.stand.err"
+    ffmpeg -ar $SampleRate -acodec pcm_s16le -f s16le -ac $NrChannels -i <(dd if=/dev/zero) -loop_input -t $standdur -i $HOME/vidkodkoo/Standbild640.480.png $dvopts -y $stand > "log/$outfile.stand.log" 2> "log/$outfile.stand.err"
 
     ## cut from video
     ffmpeg -i "$inf" -ss $ss -t $t $dvopts -y $schnitt  > "log/$outfile.schnitt.log" 2> "log/$outfile.schnitt.err"
