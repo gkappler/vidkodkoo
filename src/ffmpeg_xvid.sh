@@ -12,7 +12,7 @@ ss="$3"
 t="$4"
 
 outpath=`echo $out| sed "s/\/[^\/]*$//"`;
-out=`echo $out| sed "s/xvid/msmpeg4v2/g"`;
+out=`echo $out| sed "s/xvid/xvid/g"`;
 mkdirhier "$outpath"
 outfile=`echo $out| sed "s/.*\///g"`;
 force_overwrite=0
@@ -33,7 +33,8 @@ if [[ $height == 0 ]] ; then
     height=576
 fi
 
-outopts="-vcodec msmpeg4v2 -s $width:$height -b 2000k -acodec libmp3lame -ab 128k"
+
+outopts="-vtag xvid -vcodec libxvid -s $width:$height -b 3000k -r 25 -mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 -acodec libmp3lame -ac 2 -ar 48000 -ab 128k -threads 3"
 
 function cut {
     inf="$1"
