@@ -1,10 +1,10 @@
 #!/bin/bash
 
 cd $HOME
-autodir="/data/Videos/komprimiert/"
+autodir=$1
 
 processLine(){
-## echo $logfile
+## echo $1
     r="video=([a-zA-ZüöäßÖÄÜ0-9._]*) dipl=([a-zA-ZüöäßÖÄÜ]*) ticket=#?([0-9]*) cut.start=(-?[0-9]{2}:-?[0-9]{2}:-?[0-9]{2}) cut.dur=(-?[0-9]{2}:-?[0-9]{2}:-?[0-9]{2})"
     l=`echo "$1" | awk '{print tolower($0)}'`;
 #    echo $l
@@ -29,7 +29,8 @@ processLine(){
             find $kompdir -iname "${video}*"
         else
             outfile="$outdir/${video}_${dipl}_${tick}.xvid.avi"
-            echo >> $logfile
+
+          echo >> $logfile
             echo "Schneide \"$infile\" und speichere in \"$outfile\" ab $start, Länge $dur" | sed 's/\/mnt\/hgfs\/videos\///g' >> $logfile
             $HOME/vidkodkoo/src/ffmpeg_xvid.sh "$infile" "$outfile" $start $dur >> $logfile
         fi
@@ -90,6 +91,9 @@ do
     lno=1
     iconv -f iso8859-1 -t utf8 $f | while read line
     do
+      echo
+      echo
+      echo "processing file $f"
         if [[ ! "$line" =~ ^[[:space:]]*$ ]]; then      
             echo "       processing $line"
             processLine "$line" "$fdir" $schnitttype
