@@ -20,14 +20,15 @@ processLine(){
         start="${BASH_REMATCH[4]}:00"
         dur="${BASH_REMATCH[5]}:00"
 
-        infile=`find $kompdir -iname "${video}*"`;
+        infile=`find $kompdir -maxdepth 1 -iname "${video}*"`;
         video=`echo "$video" | sed 's/\.msmpeg4v2.avi//g'`;
         if [[ ! -f $infile  ]]; then
+            echo >> $logfile
             echo "Zeile $lno richtig, aber kein (oder mehrere) Videos gefunden. Alles richtig geschrieben?: $l \nfound: $infile" >> $logfile
             find $kompdir -iname "${video}*"
         else
             outfile="$outdir/${video}_${dipl}_${tick}.xvid.avi"
-
+            echo >> $logfile
             echo "Schneide \"$infile\" und speichere in \"$outfile\" ab $start, Länge $dur" | sed 's/\/mnt\/hgfs\/videos\///g' >> $logfile
             $HOME/vidkodkoo/src/ffmpeg_xvid.sh "$infile" "$outfile" $start $dur >> $logfile
         fi
