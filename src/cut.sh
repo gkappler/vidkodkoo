@@ -4,7 +4,6 @@ cd $HOME
 autodir="/data/Videos/komprimiert/"
 
 processLine(){
-    echo $1
     r="video=([a-zA-ZüöäßÖÄÜ0-9._]*) dipl=([a-zA-ZüöäßÖÄÜ]*) ticket=#?([0-9]*) cut.start=(-?[0-9]{2}:-?[0-9]{2}:-?[0-9]{2}) cut.dur=(-?[0-9]{2}:-?[0-9]{2}:-?[0-9]{2})"
     l=`echo "$1" | awk '{print tolower($0)}'`;
 #    echo $l
@@ -86,7 +85,7 @@ do
     lno=1
     iconv -f iso8859-1 -t utf8 $f | while read line
     do
-      echo "processing file '$f'"
+      echo "\n\n\nprocessing file '$f'"
         if [[ ! "$line" =~ ^[[:space:]]*$ ]]; then      
             echo "       processing '$line'"
             processLine "$line" "$fdir" $schnitttype
