@@ -1,7 +1,7 @@
 
 source("actlib.R")
   source("merge-act-config.R")
-  system (paste("scp ",pubdir,blacklist.file," .",sep=""))
+  system (paste("scp ",blacklist.file," .",sep=""))
 
   system (paste("cd ",basedir," && git pull",sep=""))
 
@@ -40,7 +40,7 @@ source("actlib.R")
   F$ja$set   <- with(F$ja,paste(kind,dipls,ticket))
 
   ## Frustrationstoleranz / Emotionsregulation
-  ## DuDo_Fru_T1_IsLa
+  ## DuDo_Fru_V_T1_IsLa
   F$frust            <- subset(f, type=="fru")
   F$frust$person     <- gsub(".*/([0-9]*)/([^_]*)_([^_]*)_([^_]*).*","\\4",F$frust$file)
   F$frust$t          <- gsub(".*/([0-9]*)/([^_]*)_([^_]*)_([^_]*)_([^_.]*).*","\\5",F$frust$file)
