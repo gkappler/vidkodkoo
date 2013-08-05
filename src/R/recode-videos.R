@@ -125,7 +125,7 @@ for (n in unique(merged)) {
         compcommand[["mts"]] <- compcommand[["dv"]];
 
 
-        if (!ext %in% names(compcommand))
+        if (!(ext %in% names(compcommand)))
             compcommand[[ext]] <- paste0("  ffmpeg ", 
                                       "-i \"",infile,"\" ", #
                                       "-vtag xvid -vcodec libxvid -b 3000k ", #
@@ -134,22 +134,24 @@ for (n in unique(merged)) {
                                       compcommon)
 
 
-        
+        print (compcommand)
         cat.command.file(paste ("  echo \"recoding $inf into ",z," ",compcommand[[ext]],"\"\n"))
         cat.command.file(compcommand[[ext]])
         cat.command.file(paste ("  echo \"recoded $inf into ",z," \"\n"))
         
-        
+        cat.command.file(paste ("if [[ -f \"",tmpf,"\" ]]; then\n",sep=""))
         ## move the tmp file to the target folder
-        cat.command.file(paste ("  mv \"", tmpf,"\" \"",z,"\"\n", sep=""))
+           cat.command.file(paste ("  mv \"", tmpf,"\" \"",z,"\"\n", sep=""))
         
-        if (length(t)>1) { # there are several parts
-            ## delete dv file
-            cat.command.file(paste ("  rm \"", mergeddv,"\" \n", sep=""))
-        }
+          if (length(t)>1) { # there are several parts
+              ## delete dv file
+              cat.command.file(paste ("  rm \"", mergeddv,"\" \n", sep=""))
+          }
         
-        cat.command.file(paste ("  mv \"", t,"\" \"",a,"\" \n", sep="",collapse="\n"))
+          cat.command.file(paste ("  mv \"", t,"\" \"",a,"\" \n", sep="",collapse="\n"))
         
+        cat.command.file("fi\n\n")
+            
         
         cat.command.file("fi\n\n")
     }
