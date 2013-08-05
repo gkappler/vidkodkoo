@@ -85,7 +85,7 @@ for (n in unique(merged)) {
                         avi=paste0 ("  ffmpeg ",
                             "-i \"",infile,"\" ",                       # input filename
                             "-vtag xvid -vcodec mpeg4 -b 10000k ",    # xvid video codec
-                            compcommon)
+                            compcommon),
                         wmv=paste0 ("  ffmpeg ",
                             "-i \"",infile,"\" ",                                # input filename
                             "-vtag xvid -vcodec mpeg4 -b 2000k ",        # xvid video codec
