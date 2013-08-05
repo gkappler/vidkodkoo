@@ -122,10 +122,10 @@ for (n in unique(merged)) {
                                 "-vtag xvid -vcodec mpeg4 -b 2000k ",        # xvid video codec
                                 compcommon))
 
-        compcomm[["mts"]] <- compcomm[["dv"]];
+        compcommand[["mts"]] <- compcommand[["dv"]];
 
 
-        if (!ext %in% names(compcomm))
+        if (!ext %in% names(compcommand))
             compcomm[[ext]] <- paste0("  ffmpeg ", 
                                       "-i \"",infile,"\" ", #
                                       "-vtag xvid -vcodec libxvid -b 3000k ", #
@@ -135,8 +135,8 @@ for (n in unique(merged)) {
 
 
         
-        cat.command.file(paste ("  echo \"recoding $inf into ",z," ",compcomm[[ext]],"\"\n"))
-        cat.command.file(compcomm[[ext]])
+        cat.command.file(paste ("  echo \"recoding $inf into ",z," ",compcommand[[ext]],"\"\n"))
+        cat.command.file(compcommand[[ext]])
         cat.command.file(paste ("  echo \"recoded $inf into ",z," \"\n"))
         
         
