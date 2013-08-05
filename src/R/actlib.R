@@ -6,12 +6,12 @@ debug=FALSE ) {
       return (ifelse(length(x)<c,"",x[[c]]));
     }
     ## generic reading
-    print (paste ("reading", filename))
+    cat (paste ("reading", filename,"\n"))
     con <- file(filename, "r", blocking = FALSE,encoding="iso8859-1")
       lines <- readLines(con) # empty
     close(con)
 
-    if (debug) print (paste("reading done "))
+    if (debug) cat (paste("reading done \n"))
 
     if (length(grep(".*<BR>COLUMN.*",lines[[1]])>0)) {
       ## get column names from line 2
@@ -20,7 +20,7 @@ debug=FALSE ) {
       ## data  
       data <- strsplit(lines[3:length(lines)],"\t")
       data <- lapply(data, function (x) return (x[1:max(which(x!=""))]))
-      if (debug) print ("splitting done")
+      if (debug) cat ("splitting done\n")
 
       linetype <- sapply(data,function (x) {return (x[[1]]);})
       group <- data.frame(from=which(sapply(data,function (x) {return (x[[1]]);})=="S"))
@@ -40,7 +40,7 @@ debug=FALSE ) {
       }
       set$names <- sapply(data[set$from],function (x) getatindex(x,5))
 
-      if (debug) print ("set/group parsing done")
+      if (debug) cat ("set/group parsing done\n")
 
       splits <- sapply(data,function (x) {return (length(x));})
       maxcol <- max(splits)
@@ -61,33 +61,35 @@ debug=FALSE ) {
       if (nrow(result)>0) return (result) else return ("file contains no data")
     } else {
 errormsg <- paste("invalid: ",filename,"\n",lines[[1]])
-      print (errormsg)
+      cat (errormsg)
       cat (errormsg, file=errorfile,append=TRUE)
+      cat("\n")
       return (errormsg)
     }
   }
 
-merge.act <- function (data, listname="file", debug=FALSE) { if
-  (debug)
-  print("appending missing columns to data frames -- slow, no output")
+merge.act <- function (data, listname="file", debug=FALSE) { 
 
-  ## this appends a column "file" to the matrix for later merging of set/group info
-  for (file in names(data)) {
-    fdata <- data[[file]]
-    print (paste (file,class(fdata)))
-     if (class(fdata)=="matrix") {
-        if (nrow(fdata)>0) data[[file]] <- cbind(fdata,file) else {
-          print(paste("removing empty data file",file, fdata))
-          data[[file]] <- NULL
+    if (debug)
+        cat("appending missing columns to data frames -- slow, no output\n")
+
+    ## this appends a column "file" to the matrix for later merging of set/group info
+    for (file in names(data)) {
+        fdata <- data[[file]]
+        print (paste (file,class(fdata)))
+        if (class(fdata)=="matrix") {
+            if (nrow(fdata)>0) data[[file]] <- cbind(fdata,file) else {
+                cat(paste("removing empty data file",file, fdata,"\n"))
+                data[[file]] <- NULL
+            }
+        } else {
+            cat(paste("removing invalid data file",file, fdata,"\n"))
+            data[[file]] <- NULL
         }
-     } else {
-        print(paste("removing invalid data file",file, fdata))
-        data[[file]] <- NULL
-     }
-  }
-  print("rbinding data frames")  
+    }
+    cat("rbinding data frames\n")  
 
-  return (do.call(rbind.fill.matrix,data))
+    return (do.call(rbind.fill.matrix,data))
 }
 
 write.act <- function (d, system, filename,
@@ -119,7 +121,7 @@ write.act <- function (d, system, filename,
     d <- d[order(d$group,d$set,d$Entry),]
 
     for (g in unique (d$group)) {
-      print (paste("writing group",g))
+      cat (paste("writing group",g,"\n"))
                                           # create group
       cat ("\nS\t00:00:00:00\t00:00:00:00\t\t",g, "\n",sep="",file=filename,append=TRUE)
                                           #
@@ -133,7 +135,7 @@ write.act <- function (d, system, filename,
         cat ("\nT\t00:00:00:00\t00:00:00:00\t\t",
              s, "\n",
              sep="",file=filename,append=TRUE)
-        print (paste("   writing ",g,s))
+        cat (paste("   writing ",g,s,"\n"))
                                           #      print entries
 
         cat(
@@ -192,7 +194,7 @@ write.act <- function (d, system, filename,
 exclude.blacklisted <- function (f, filename, ## blacklist file
                                  enc="iso8859-1",
                                  part.regexp=".*/([0-9]*/.*)$") {
-  print (paste ("reading", filename))
+  cat (paste ("reading", filename,"\n"))
   con <- file(filename, "r",
               blocking = FALSE,
               encoding=enc)
