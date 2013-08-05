@@ -69,6 +69,7 @@ for (n in unique(merged)) {
     t <- teil[merged==n]
     a <- arch[merged==n]
     ext <- gsub (".*\\.","",n)
+    tmpf <- tmp[merged==n][[1]]
     
     compcommon <- paste("-r 25 ",                                       # 25 frames per second
                         "-acodec libmp3lame -ac 2 -ar 48000 -ab 128k ", # mp3 audio compression
@@ -103,7 +104,6 @@ for (n in unique(merged)) {
                                   compcommon)
 
 
-    tmpf <- tmp[merged==n][[1]]
     ##    t <- gsub("(MOD|mod|mpg|MPG|mts|MTS)","avi",t)
 
     ## Debugging
