@@ -126,7 +126,7 @@ for (n in unique(merged)) {
 
 
         if (!ext %in% names(compcommand))
-            compcomm[[ext]] <- paste0("  ffmpeg ", 
+            compcommand[[ext]] <- paste0("  ffmpeg ", 
                                       "-i \"",infile,"\" ", #
                                       "-vtag xvid -vcodec libxvid -b 3000k ", #
                                       "-r 25 ", #
