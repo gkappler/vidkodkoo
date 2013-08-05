@@ -64,45 +64,12 @@ cat.command.file("# preparation of files:  each file is 1st merged (if there are
 
 for (n in unique(merged)) {
     mergeddv <- NULL
-    nfile <- gsub ("^.*/","",n)
+    filesansext <- gsub ("^.*/","",n)
     z <- ziel[merged==n][[1]] 
     t <- teil[merged==n]
     a <- arch[merged==n]
     ext <- gsub (".*\\.","",n)
     tmpf <- tmp[merged==n][[1]]
-    
-    compcommon <- paste("-r 25 ",                                       # 25 frames per second
-                        "-acodec libmp3lame -ac 2 -ar 48000 -ab 128k ", # mp3 audio compression
-                        "-threads 3 ",  # multi-cpu compression
-                        "-y ",                                          # force overwrite
-                        "\"", tmpf,"\" ",                               # output
-                        "> \"log/",nfile,".out\" ",                     # logging
-                        "2> \"log/",nfile,".err\"\n", sep="")
-    compcommand <- list(dv=paste0 ("  ffmpeg ",
-                            "-i \"",infile,"\" ",                       # input filename
-                            "-vtag xvid -vcodec libxvid -b 10000k ",    # xvid video codec
-                            "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
-                            compcommon),
-                        avi=paste0 ("  ffmpeg ",
-                            "-i \"",infile,"\" ",                       # input filename
-                            "-vtag xvid -vcodec mpeg4 -b 10000k ",    # xvid video codec
-                            compcommon),
-                        wmv=paste0 ("  ffmpeg ",
-                            "-i \"",infile,"\" ",                                # input filename
-                            "-vtag xvid -vcodec mpeg4 -b 2000k ",        # xvid video codec
-                            compcommon))
-
-    compcomm[["mts"]] <- compcomm[["dv"]];
-
-
-    if (!ext %in% names(compcomm))
-        compcomm[[ext]] <- paste0("  ffmpeg ", 
-                                  "-i \"",infile,"\" ", #
-                                  "-vtag xvid -vcodec libxvid -b 3000k ", #
-                                  "-r 25 ", #
-                                  "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
-                                  compcommon)
-
 
     ##    t <- gsub("(MOD|mod|mpg|MPG|mts|MTS)","avi",t)
 
@@ -132,6 +99,41 @@ for (n in unique(merged)) {
             infile <- t[[1]]
         }
         
+
+        
+        compcommon <- paste("-r 25 ",                                       # 25 frames per second
+                            "-acodec libmp3lame -ac 2 -ar 48000 -ab 128k ", # mp3 audio compression
+                            "-threads 3 ",  # multi-cpu compression
+                            "-y ",                                          # force overwrite
+                            "\"", tmpf,"\" ",                               # output
+                            "> \"log/",filesansext,".out\" ",                     # logging
+                            "2> \"log/",filesansext,".err\"\n", sep="")
+        compcommand <- list(dv=paste0 ("  ffmpeg ",
+                                "-i \"",infile,"\" ",                       # input filename
+                                "-vtag xvid -vcodec libxvid -b 10000k ",    # xvid video codec
+                                "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
+                                compcommon),
+                            avi=paste0 ("  ffmpeg ",
+                                "-i \"",infile,"\" ",                       # input filename
+                                "-vtag xvid -vcodec mpeg4 -b 10000k ",    # xvid video codec
+                                compcommon),
+                            wmv=paste0 ("  ffmpeg ",
+                                "-i \"",infile,"\" ",                                # input filename
+                                "-vtag xvid -vcodec mpeg4 -b 2000k ",        # xvid video codec
+                                compcommon))
+
+        compcomm[["mts"]] <- compcomm[["dv"]];
+
+
+        if (!ext %in% names(compcomm))
+            compcomm[[ext]] <- paste0("  ffmpeg ", 
+                                      "-i \"",infile,"\" ", #
+                                      "-vtag xvid -vcodec libxvid -b 3000k ", #
+                                      "-r 25 ", #
+                                      "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
+                                      compcommon)
+
+
         
         cat.command.file(paste ("  echo \"recoding $inf into ",z," ",compcomm[[ext]],"\"\n"))
         cat.command.file(compcomm[[ext]])
