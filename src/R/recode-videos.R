@@ -68,8 +68,9 @@ for (n in unique(merged)) {
     z <- ziel[merged==n][[1]] 
     t <- teil[merged==n]
     a <- arch[merged==n]
-    ext <- gsub (".*\\.","",n)
+    ext <- gsub ("^.*\\.","",tolower(a)[[1]])
     tmpf <- tmp[merged==n][[1]]
+
 
     ##    t <- gsub("(MOD|mod|mpg|MPG|mts|MTS)","avi",t)
 
@@ -134,7 +135,7 @@ for (n in unique(merged)) {
                                       compcommon)
 
 
-        print (compcommand)
+##        print (names(compcommand))
         cat.command.file(paste ("  echo \"recoding $inf into ",z," ",compcommand[[ext]],"\"\n"))
         cat.command.file(compcommand[[ext]])
         cat.command.file(paste ("  echo \"recoded $inf into ",z," \"\n"))
