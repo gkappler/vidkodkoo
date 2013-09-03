@@ -120,9 +120,15 @@ for (n in unique(merged)) {
                             wmv=paste0 ("  ffmpeg ",
                                 "-i \"",infile,"\" ",                                # input filename
                                 "-vtag xvid -vcodec mpeg4 -b 2000k ",        # xvid video codec
+                                compcommon),
+			    mts=paste0 ("  ffmpeg ",
+                                "-i \"",infile,"\" ",                       # input filename
+                                "-deinterlace -vtag xvid -vcodec libxvid -s 1920x1080 -aspect 16:9 -b 5000k ",    # xvid video codec 
+                                "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
                                 compcommon))
 
-        compcommand[["mts"]] <- compcommand[["dv"]];
+
+        #compcommand[["mts"]] <- compcommand[["dv"]];
 
 
         if (!(ext %in% names(compcommand)))
