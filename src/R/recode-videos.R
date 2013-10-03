@@ -2,12 +2,17 @@ require(utils)
   source("recode-config.R")
   ## get all video files in the directory 
   all <- list.files (dir.input,
-                     pattern=paste(".*",regexp.videos,sep=""),
+                     pattern=regexp.videos,
                      full.names = TRUE,
                      recursive=TRUE)
 cat ("These Files were found: ")
-cat (all)
-  
+cat (paste(all,collapse="\n"))
+all2 <- gsub ("[^A-Za-z0-9.-_ ]","_",all)
+cat ("FILENAME ERROR: THESE FILES CANNOT BE PROCESSED: ")
+cat (paste(all[all!=all2],collapse="\n"))
+all <- all[all==all2]
+cat ("These Files WILL be processed: ")
+cat (paste(all,collapse="\n"))
   
   teil <- subset(all,grepl(regexp.restrict,tolower(all)))
   teil <- c(subset(teil,grepl(regexp.prio,tolower(teil))), subset(teil,!grepl(regexp.prio,tolower(teil))))

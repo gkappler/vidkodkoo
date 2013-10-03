@@ -2,11 +2,11 @@ forceOverwrite <- TRUE
 compress <- TRUE
 run.compression <- TRUE
 
-regexp.restrict <- "[^A-Za-z0-9.-_ ]*"
+regexp.restrict <- ".*"
 regexp.prio <- ".*tagesmutter.videos.*(jowö|lebl|tiva|bjlö|alwi|emke|luüb|mave|roro|sopr|lucl|lebl|bilö|alwi|luüb|emke|jowö|tiva|mave|sopr|lucl).*"
 ##  regexp.teil <- "_Teil ?[1-9]"
 regexp.teil <- "_Teil[1-9]"
-regexp.videos <- "(MPG|mpg|MOD|mod|mts|MTS|AVI|avi|WMV|wmv)$"
+regexp.videos <- paste0(".*","(MPG|mpg|MOD|mod|mts|MTS|AVI|avi|WMV|wmv)$")
 
 dir.input <- "/dataNAS/Videos_INBOX"
 dir.output <- "/dataNAS/Videos_KOMPRIMIERT"
