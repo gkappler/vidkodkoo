@@ -1,4 +1,3 @@
-
 require(utils)
 source("recode-config.R")
 ## get all video files in the directory 
@@ -70,16 +69,16 @@ for (n in unique(merged)) {
     a <- arch[merged==n]
     ext <- gsub ("^.*\\.","",t[[1]])
     tmpf <- tmp[merged==n][[1]]
-
+    
     ##    t <- gsub("(MOD|mod|mpg|MPG|mts|MTS)","avi",t)
-
+    
     ## Debugging
     ##    print (t)
     ##    print (n)
     ##    print (z)
-
+    
     if (forceOverwrite) cat.command.file(paste ("rm \"",z,"\"\n",sep="")) ## delete output, necessary with archiving system
-
+    
     if (compress) {
         cat.command.file(paste ("if [[ ! -f \"",z,"\" ]]; then\n",sep=""))
         if (length(t)>1) { # there are several parts
@@ -99,7 +98,7 @@ for (n in unique(merged)) {
             infile <- t[[1]]
         }
         
-
+        
         
         compcommon <- paste("-r 25 ",                                       # 25 frames per second
                             "-acodec libmp3lame -ac 2 -ar 48000 -ab 128k ", # mp3 audio compression
@@ -121,47 +120,47 @@ for (n in unique(merged)) {
                                 "-i \"",infile,"\" ",                                # input filename
                                 "-vtag xvid -vcodec mpeg4 -b 2000k ",        # xvid video codec
                                 compcommon),
-			    mts=paste0 ("  ffmpeg ",
+                            mts=paste0 ("  ffmpeg ",
                                 "-i \"",infile,"\" ",                       # input filename
-                                "-deinterlace -vtag xvid -vcodec libxvid -s 1920x1080 -aspect 16:9 -b 5000k ",    # xvid video codec 
+                                "-deinterlace -vtag xvid -vcodec libxvid -b 5000k -s 1920x1080 -aspect 16:9 ",    # xvid video codec 
                                 "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
                                 compcommon))
-
-
-        #compcommand[["mts"]] <- compcommand[["dv"]];
-
-
-        if (!(ext %in% names(compcommand)))
-            compcommand[[ext]] <- paste0("  ffmpeg ", 
-                                      "-i \"",infile,"\" ", #
-                                      "-vtag xvid -vcodec libxvid -b 3000k ", #
-                                      "-r 25 ", #
-                                      "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
-                                      compcommon)
-
-
+        
+                                        #          compcommand[["mts"]] <- compcommand[["dv"]];
+        
+        
+        if (!(tolower(ext) %in% names(compcommand))) {
+            compcommand[[tolower(ext)]] <- paste0("  ffmpeg ", 
+                                                  "-i \"",infile,"\" ", #
+                                                  "-vtag xvid -vcodec libxvid -b 3000k ", #
+                                                  "-r 25 ", #
+                                                  "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
+                                                  compcommon)
+        }
+        
+        
         print (paste0("ext '",ext,"' in ",compcommand))
         cat.command.file(paste ("  echo \"recoding $inf into ",z,"...\"\n"))
-        cat.command.file(compcommand[[ext]])
+        cat.command.file(compcommand[[tolower(ext)]])
         cat.command.file(paste ("  echo \"   ...recoded $inf into ",z,". \"\n"))
         
         cat.command.file(paste ("if [[ -f \"",tmpf,"\" ]]; then\n",sep=""))
         ## move the tmp file to the target folder
-           cat.command.file(paste ("  mv \"", tmpf,"\" \"",z,"\"\n", sep=""))
+        cat.command.file(paste ("  mv \"", tmpf,"\" \"",z,"\"\n", sep=""))
         
-          if (length(t)>1) { # there are several parts
-              ## delete dv file
-              cat.command.file(paste ("  rm \"", mergeddv,"\" \n", sep=""))
-          }
+        if (length(t)>1) { # there are several parts
+            ## delete dv file
+            cat.command.file(paste ("  rm \"", mergeddv,"\" \n", sep=""))
+        }
         
-          cat.command.file(paste ("  mv \"", t,"\" \"",a,"\" \n", sep="",collapse="\n"))
+        cat.command.file(paste ("  mv \"", t,"\" \"",a,"\" \n", sep="",collapse="\n"))
         
         cat.command.file("fi\n\n")
-            
+        
         
         cat.command.file("fi\n\n")
     }
-
+    
     if (cleanUp) { ## NOTE: this is broken after change to archiving process, kept for reference
         cat.command.file(paste ("if [[ -f \"",z,"\" ]]; then\n",sep=""))
         
