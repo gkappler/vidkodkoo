@@ -61,6 +61,35 @@ for (zdir in unique(gsub("/[^/]*$","",arch))) {
 
 cat.command.file("# preparation of files:  each file is 1st merged (if there are several parts) and 2nd compressed.\n\n")
 
+
+compcommon <- paste("-r 25 ",                                       # 25 frames per second
+                    "-acodec libmp3lame -ac 2 -ar 48000 -ab 128k ", # mp3 audio compression
+                    "-threads 3 ",  # multi-cpu compression
+                    "-y ",                                          # force overwrite
+                    "\"", tmpf,"\" ",                               # output
+                    "> \"log/",filesansext,".out\" ",                     # logging
+                    "2> \"log/",filesansext,".err\"\n", sep="")
+compcommand <- list(dv=paste0 ("  ffmpeg ",
+                        "-i \"",infile,"\" ",                       # input filename
+                        "-vtag xvid -vcodec libxvid -b 10000k ",    # xvid video codec
+                        "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
+                        compcommon),
+                    avi=paste0 ("  ffmpeg ",
+                        "-i \"",infile,"\" ",                       # input filename
+                        "-vtag xvid -vcodec mpeg4 -b 10000k ",    # xvid video codec
+                        compcommon),
+                    wmv=paste0 ("  ffmpeg ",
+                        "-i \"",infile,"\" ",                                # input filename
+                        "-vtag xvid -vcodec mpeg4 -b 2000k ",        # xvid video codec
+                        compcommon),
+                    mts=paste0 ("  ffmpeg ",
+                        "-i \"",infile,"\" ",                       # input filename
+                        "-deinterlace -vtag xvid -vcodec libxvid -b 5000k -s 1920x1080 -aspect 16:9 ",    # xvid video codec 
+                        "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
+                        compcommon))
+
+##          compcommand[["mts"]] <- compcommand[["dv"]];
+
 for (n in unique(merged)) {
     mergeddv <- NULL
     filesansext <- gsub ("^.*/","",n)
@@ -79,87 +108,61 @@ for (n in unique(merged)) {
     
     if (forceOverwrite) cat.command.file(paste ("rm \"",z,"\"\n",sep="")) ## delete output, necessary with archiving system
     
-    if (compress) {
-        cat.command.file(paste ("if [[ ! -f \"",z,"\" ]]; then\n",sep=""))
-        if (length(t)>1) { # there are several parts
-            mergeddv <- gsub ("\\.[^.]*$",".dv",tmpf)
-            cat.command.file(paste ("rm -f \"",mergeddv,"\"\n",sep=""))
-            
-            cat.command.file(paste ("  echo \"merging ",paste(t,sep="",collapse=" "), "into",mergeddv,"\"\n"))
-            for (teilf in t) {
-                cat.command.file(paste ("ffmpeg -i \"",teilf,"\"",
-                                        "  -target pal-dv -r 25 - ",
-                                        " >> \"",mergeddv,"\"  2>/dev/null \n",sep=""))
+    if (compress)
+        tryCatch ({
+            cat.command.file(paste ("if [[ ! -f \"",z,"\" ]]; then\n",sep=""))
+            if (length(t)>1) { # there are several parts
+                mergeddv <- gsub ("\\.[^.]*$",".dv",tmpf)
+                cat.command.file(paste ("rm -f \"",mergeddv,"\"\n",sep=""))
+                
+                cat.command.file(paste ("  echo \"merging ",paste(t,sep="",collapse=" "), "into",mergeddv,"\"\n"))
+                for (teilf in t) {
+                    cat.command.file(paste ("ffmpeg -i \"",teilf,"\"",
+                                            "  -target pal-dv -r 25 - ",
+                                            " >> \"",mergeddv,"\"  2>/dev/null \n",sep=""))
+                }
+                ## cat.command.file(paste ("  mv \"", tmpf,"\" \"",n,"\"\n", sep=""))cat.command.file("  -target pal-dv -r 25 - ")
+                ## cat.command.file(paste ("inf=\"",mergeddv,"\";\n",sep=""))
+                infile <- mergeddv
+            } else {
+                infile <- t[[1]]
             }
-            ## cat.command.file(paste ("  mv \"", tmpf,"\" \"",n,"\"\n", sep=""))cat.command.file("  -target pal-dv -r 25 - ")
-            ## cat.command.file(paste ("inf=\"",mergeddv,"\";\n",sep=""))
-            infile <- mergeddv
-        } else {
-            infile <- t[[1]]
-        }
-        
-        
-        
-        compcommon <- paste("-r 25 ",                                       # 25 frames per second
-                            "-acodec libmp3lame -ac 2 -ar 48000 -ab 128k ", # mp3 audio compression
-                            "-threads 3 ",  # multi-cpu compression
-                            "-y ",                                          # force overwrite
-                            "\"", tmpf,"\" ",                               # output
-                            "> \"log/",filesansext,".out\" ",                     # logging
-                            "2> \"log/",filesansext,".err\"\n", sep="")
-        compcommand <- list(dv=paste0 ("  ffmpeg ",
-                                "-i \"",infile,"\" ",                       # input filename
-                                "-vtag xvid -vcodec libxvid -b 10000k ",    # xvid video codec
-                                "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
-                                compcommon),
-                            avi=paste0 ("  ffmpeg ",
-                                "-i \"",infile,"\" ",                       # input filename
-                                "-vtag xvid -vcodec mpeg4 -b 10000k ",    # xvid video codec
-                                compcommon),
-                            wmv=paste0 ("  ffmpeg ",
-                                "-i \"",infile,"\" ",                                # input filename
-                                "-vtag xvid -vcodec mpeg4 -b 2000k ",        # xvid video codec
-                                compcommon),
-                            mts=paste0 ("  ffmpeg ",
-                                "-i \"",infile,"\" ",                       # input filename
-                                "-deinterlace -vtag xvid -vcodec libxvid -b 5000k -s 1920x1080 -aspect 16:9 ",    # xvid video codec 
-                                "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
-                                compcommon))
-        
-                                        #          compcommand[["mts"]] <- compcommand[["dv"]];
-        
-        
-        if (!(tolower(ext) %in% names(compcommand))) {
-            compcommand[[tolower(ext)]] <- paste0("  ffmpeg ", 
-                                                  "-i \"",infile,"\" ", #
-                                                  "-vtag xvid -vcodec libxvid -b 3000k ", #
-                                                  "-r 25 ", #
-                                                  "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
-                                                  compcommon)
-        }
-        
-        
-        print (paste0("ext '",ext,"' in ",compcommand))
-        cat.command.file(paste ("  echo \"recoding $inf into ",z,"...\"\n"))
-        cat.command.file(compcommand[[tolower(ext)]])
-        cat.command.file(paste ("  echo \"   ...recoded $inf into ",z,". \"\n"))
-        
-        cat.command.file(paste ("if [[ -f \"",tmpf,"\" ]]; then\n",sep=""))
-        ## move the tmp file to the target folder
-        cat.command.file(paste ("  mv \"", tmpf,"\" \"",z,"\"\n", sep=""))
-        
-        if (length(t)>1) { # there are several parts
-            ## delete dv file
-            cat.command.file(paste ("  rm \"", mergeddv,"\" \n", sep=""))
-        }
-        
-        cat.command.file(paste ("  mv \"", t,"\" \"",a,"\" \n", sep="",collapse="\n"))
-        
-        cat.command.file("fi\n\n")
-        
-        
-        cat.command.file("fi\n\n")
-    }
+            
+            
+            
+            if (!(tolower(ext) %in% names(compcommand))) {
+                compcommand[[tolower(ext)]] <- paste0("  ffmpeg ", 
+                                                      "-i \"",infile,"\" ", #
+                                                      "-vtag xvid -vcodec libxvid -b 3000k ", #
+                                                      "-r 25 ", #
+                                                      "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ",
+                                                      compcommon)
+            }
+            
+            
+            print (paste0("ext '",ext,"' in ",compcommand))
+            cat.command.file(paste ("  echo \"recoding $inf into ",z,"...\"\n"))
+            cat.command.file(compcommand[[tolower(ext)]])
+            cat.command.file(paste ("  echo \"   ...recoded $inf into ",z,". \"\n"))
+            
+            cat.command.file(paste ("if [[ -f \"",tmpf,"\" ]]; then\n",sep=""))
+            ## move the tmp file to the target folder
+            cat.command.file(paste ("  mv \"", tmpf,"\" \"",z,"\"\n", sep=""))
+            
+            if (length(t)>1) { # there are several parts
+                ## delete dv file
+                cat.command.file(paste ("  rm \"", mergeddv,"\" \n", sep=""))
+            }
+            
+            cat.command.file(paste ("  mv \"", t,"\" \"",a,"\" \n", sep="",collapse="\n"))
+            
+            cat.command.file("fi\n\n")
+            
+            
+            cat.command.file("fi\n\n")
+        }, error=function (e) {
+            cat (paste0("failed to process ",z," because ",e))
+        })
     
     if (cleanUp) { ## NOTE: this is broken after change to archiving process, kept for reference
         cat.command.file(paste ("if [[ -f \"",z,"\" ]]; then\n",sep=""))
