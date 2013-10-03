@@ -89,7 +89,7 @@ for (n in unique(merged)) {
             for (teilf in t) {
                 cat.command.file(paste ("ffmpeg -i \"",teilf,"\"",
                                         "  -target pal-dv -r 25 - ",
-                                        " >> \"",mergeddv,"\"\n",sep=""))
+                                        " >> \"",mergeddv,"\"  2>/dev/null \n",sep=""))
             }
             ## cat.command.file(paste ("  mv \"", tmpf,"\" \"",n,"\"\n", sep=""))cat.command.file("  -target pal-dv -r 25 - ")
             ## cat.command.file(paste ("inf=\"",mergeddv,"\";\n",sep=""))
