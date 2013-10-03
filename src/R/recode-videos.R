@@ -5,13 +5,13 @@ require(utils)
                      pattern=regexp.videos,
                      full.names = TRUE,
                      recursive=TRUE)
-cat ("These Files were found: ")
-cat (paste(all,collapse="\n"))
+##cat ("These Files were found: ")
+##cat (paste(all,collapse="\n"))
 all2 <- gsub ("[^A-Za-z0-9.-_ ]","_",all)
-cat ("FILENAME ERROR: THESE FILES CANNOT BE PROCESSED: ")
+cat ("\n\nFILENAME ERROR: THESE FILES CANNOT BE PROCESSED: ")
 cat (paste(all[all!=all2],collapse="\n"))
 all <- all[all==all2]
-cat ("These Files WILL be processed: ")
+cat ("\n\nThese Files WILL be processed: ")
 cat (paste(all,collapse="\n"))
   
   teil <- subset(all,grepl(regexp.restrict,tolower(all)))
@@ -69,19 +69,13 @@ cat (paste(all,collapse="\n"))
   cat.command.file("# preparation of files:  each file is 1st merged (if there are several parts) and 2nd compressed.\n\n")
   
   
-  compcommand <- list(dv=paste0 ("  ffmpeg ",
-                          "-i \"",infile,"\" ",                       # input filename
-                          "-vtag xvid -vcodec libxvid -b 10000k ",    # xvid video codec
+  compcommand <- list(dv=paste0 ("-vtag xvid -vcodec libxvid -b 10000k ",    # xvid video codec
                           "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 "),
-                      avi=paste0 ("  ffmpeg ",
-                          "-i \"",infile,"\" ",                       # input filename
-                          "-vtag xvid -vcodec mpeg4 -b 10000k "),    # xvid video codec
+                      avi=paste0 ("-vtag xvid -vcodec mpeg4 -b 10000k "),    # xvid video codec
                       wmv=paste0 ("  ffmpeg ",
                           "-i \"",infile,"\" ",                                # input filename
                           "-vtag xvid -vcodec mpeg4 -b 2000k "),        # xvid video codec
-                      mts=paste0 ("  ffmpeg ",
-                          "-i \"",infile,"\" ",                       # input filename
-                          "-deinterlace -vtag xvid -vcodec libxvid -b 5000k -s 1920x1080 -aspect 16:9 ",    # xvid video codec 
+                      mts=paste0 ("-deinterlace -vtag xvid -vcodec libxvid -b 5000k -s 1920x1080 -aspect 16:9 ",    # xvid video codec 
                           "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 "))
   
   ##          compcommand[["mts"]] <- compcommand[["dv"]];
@@ -137,9 +131,7 @@ cat (paste(all,collapse="\n"))
               
               
               if (!(tolower(ext) %in% names(compcommand))) {
-                  compcommand[[tolower(ext)]] <- paste0("  ffmpeg ", 
-                                                        "-i \"",infile,"\" ", #
-                                                        "-vtag xvid -vcodec libxvid -b 3000k ", #
+                  compcommand[[tolower(ext)]] <- paste0("-vtag xvid -vcodec libxvid -b 3000k ", #
                                                         "-r 25 ", #
                                                         "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 ")
               }
@@ -147,7 +139,9 @@ cat (paste(all,collapse="\n"))
               
               print (paste0("ext '",ext,"' in ",compcommand))
               cat.command.file(paste ("  echo \"recoding $inf into ",z,"...\"\n"))
-              cat.command.file(paste0(compcommand[[tolower(ext)]],compcommon))
+              cat.command.file(paste0("  ffmpeg ",
+                          "-i \"",infile,"\" ",                       # input filename
+                          compcommand[[tolower(ext)]],compcommon))
               cat.command.file(paste ("  echo \"   ...recoded $inf into ",z,". \"\n"))
               
               cat.command.file(paste ("if [[ -f \"",tmpf,"\" ]]; then\n",sep=""))
