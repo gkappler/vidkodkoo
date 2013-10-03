@@ -72,9 +72,7 @@ cat (paste(all,collapse="\n"))
   compcommand <- list(dv=paste0 ("-vtag xvid -vcodec libxvid -b 10000k ",    # xvid video codec
                           "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 "),
                       avi=paste0 ("-vtag xvid -vcodec mpeg4 -b 10000k "),    # xvid video codec
-                      wmv=paste0 ("  ffmpeg ",
-                          "-i \"",infile,"\" ",                                # input filename
-                          "-vtag xvid -vcodec mpeg4 -b 2000k "),        # xvid video codec
+                      wmv=paste0 ("-vtag xvid -vcodec mpeg4 -b 2000k "),        # xvid video codec
                       mts=paste0 ("-deinterlace -vtag xvid -vcodec libxvid -b 5000k -s 1920x1080 -aspect 16:9 ",    # xvid video codec 
                           "-mbd rd -flags +mv4+aic -trellis 2 -cmp 2 -subcmp 2 -g 300 "))
   
